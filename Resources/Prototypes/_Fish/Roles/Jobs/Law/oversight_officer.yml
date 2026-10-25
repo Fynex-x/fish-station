@@ -16,7 +16,7 @@
     - !type:DiscordRoleRequirement
   startingGear: OversightOfficerGear
   icon: JobIconOversightOfficer
-  weight: 80 # fish-edit
+  # weight: 80 # fish-edit
   setPreference: true # fish-edit
   overrideConsoleVisibility: false # fish-edit
   supervisors: job-supervisors-oversightdep

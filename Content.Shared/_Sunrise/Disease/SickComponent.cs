@@ -1,7 +1,7 @@
 using Content.Shared.Chemistry.Components;
 using Content.Shared.StatusIcon;
 using Robust.Shared.GameStates;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
+using Robust.Shared.Prototypes;
 
 namespace Content.Shared._Sunrise.Disease;
 
@@ -15,8 +15,8 @@ public sealed partial class SickComponent : Component
     public EntityUid owner;
 
     [ViewVariables(VVAccess.ReadWrite)]
-    [DataField("icon", customTypeSerializer: typeof(PrototypeIdSerializer<StatusIconPrototype>))]
-    public string Icon = "SmartDiseaseIcon";
+    [DataField("icon")]
+    public ProtoId<StatusIconPrototype> Icon = "SmartDiseaseIcon";
 
     [DataField("inited")]
     [AutoNetworkedField]

@@ -10,7 +10,8 @@
     Digestion:
       # Disgusting!
       effects:
-      - !type:SatiateThirst
+      - !type:Satiate
+        satiationType: Thirst
         factor: -0.5
     Bloodstream:
       effects:
@@ -33,7 +34,8 @@
     Digestion:
       # Disgusting!
       effects:
-      - !type:SatiateThirst
+      - !type:Satiate
+        satiationType: Thirst
         factor: -0.5
     Bloodstream:
       effects:
@@ -56,7 +58,8 @@
     Digestion:
       # Disgusting!
       effects:
-      - !type:SatiateThirst
+      - !type:Satiate
+        satiationType: Thirst
         factor: -0.5
     Bloodstream:
       effects:
@@ -79,7 +82,8 @@
     Digestion:
       # Disgusting!
       effects:
-      - !type:SatiateThirst
+      - !type:Satiate
+        satiationType: Thirst
         factor: -0.5
     Bloodstream:
       effects:

@@ -365,7 +365,7 @@ namespace Content.Server._Sunrise.BloodCult.Runes.Systems
                 return;
 
             if (component.CultType == null ||
-                !_prototypeManager.TryIndex<BloodCultPrototype>($"{component.CultType.Value.ToString()}Cult", out var cultPrototype))
+                !ProtoMan.TryIndex<BloodCultPrototype>($"{component.CultType.Value.ToString()}Cult", out var cultPrototype))
                 return;
 
             _bloodstreamSystem.TryModifyBloodLevel(uid, -20);
@@ -531,7 +531,6 @@ namespace Content.Server._Sunrise.BloodCult.Runes.Systems
             _entityManager.DeleteEntity(args.Target.Value);
             if (TryComp<DestructibleComponent>(airlock, out var destructible))
             {
-                destructible.Thresholds.Clear();
                 var damageThreshold = new DamageThreshold
                 {
                     Trigger = new DamageTrigger { Damage = 150 }
@@ -545,7 +544,7 @@ namespace Content.Server._Sunrise.BloodCult.Runes.Systems
                 {
                     Acts = ThresholdActs.Destruction
                 });
-                destructible.Thresholds.Add(damageThreshold);
+                _destructible.ReplaceThresholds((airlock, destructible), damageThreshold);
             }
 
             _bloodstreamSystem.TryModifyBloodLevel((args.User, bloodstreamComponent), -15);
@@ -565,7 +564,7 @@ namespace Content.Server._Sunrise.BloodCult.Runes.Systems
                 return;
 
             if (component.CultType == null ||
-                !_prototypeManager.TryIndex<BloodCultPrototype>($"{component.CultType.Value.ToString()}Cult", out var cultPrototype))
+                !ProtoMan.TryIndex<BloodCultPrototype>($"{component.CultType.Value.ToString()}Cult", out var cultPrototype))
                 return;
 
             var xform = Transform(args.Performer).Coordinates;

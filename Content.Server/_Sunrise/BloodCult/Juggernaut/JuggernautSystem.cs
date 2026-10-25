@@ -1,6 +1,6 @@
 using Content.Server.Hands.Systems;
 using Content.Shared.Body.Events;
-using Content.Shared.Timing;
+using Content.Shared.Timing.Systems;
 using Content.Shared.Weapons.Melee.Events;
 
 namespace Content.Server._Sunrise.BloodCult.Juggernaut;

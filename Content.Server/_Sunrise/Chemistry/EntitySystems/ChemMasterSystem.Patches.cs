@@ -11,19 +11,32 @@ namespace Content.Server.Chemistry.EntitySystems
 {
     public sealed partial class ChemMasterSystem
     {
-        [ValidatePrototypeId<EntityPrototype>]
-        private const string PatchPrototypeId = "Patch";
+        private static readonly EntProtoId PatchPrototypeId = "Patch";
+
+        /// <summary>
+        /// Максимальное количество предметов(таблетки, патчи, которые можно заспавнить за 1 нажатие
+        /// </summary>
+        private const int MaxPerRequest = 50;
 
         private void OnCreatePatchesMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterCreatePatchesMessage message)
         {
             var user = message.Actor;
-            var maybeContainer = _itemSlotsSystem.GetItemOrNull(chemMaster, SharedChemMaster.OutputSlotName);
+            var maybeContainer = _itemSlotsSystem.GetItemOrNull((chemMaster.Owner, null), SharedChemMaster.OutputSlotName);
             if (maybeContainer is not { Valid: true } container || !TryComp(container, out StorageComponent? storage))
                 return; // output can't fit patches
 
             // Ensure the number is valid.
             if (message.Number == 0 || !_storageSystem.HasSpace((container, storage)))
                 return;
+
+            // Серверная валидация для спасения от модифицированных клиентов.
+            // Проблема в том, что валидация выше срабатывает при любом значении, которое не 0 и таблетница не пустая.
+            // Даже если в ней остался 1 слот, а мы хотим впихнуть 9999999 таблеток
+            if (message.Number > MaxPerRequest)
+            {
+                _popupSystem.PopupCursor(Loc.GetString("chem-master-window-too-many-pills-text"), user);
+                return;
+            }
 
             // Ensure the amount is valid.
             if (message.Dosage == 0 || message.Dosage > chemMaster.Comp.PatchDosageLimit)

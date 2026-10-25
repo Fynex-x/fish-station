@@ -1,7 +1,6 @@
 - type: entity
   id: BaseConstruct
   abstract: true
-  save: false
   categories: [ HideSpawnMenu ]
   components:
     - type: ContentEye
@@ -67,9 +66,13 @@
         - CannotSuicide
         - DoorBumpOpener
     - type: CultMember
-    - type: DamageOverlay
-    - type: ToggleableNightVision
-      effect: EffectNightVisionSyndie
+    - type: SunriseDamagePopup
+    # Fish-start: использование NightVision вместо некорректного FishNightVision
+    - type: NightVision
+      enabled: false
+      action: ActionToggleNightVision
+      lightingColor: '#D61B1B26'
+    # Fish-end
     - type: TTS
       voice: dragon_knight_dragon_dota_2
 
@@ -79,7 +82,7 @@
   name: juggernaut
   description: big and scary
   components:
-    - type: Damageable
+    - type: Damageable # Fish-edit
       damageModifierSet: BloodCultJuggernautModifierSet
     - type: Fixtures
       fixtures:
@@ -98,7 +101,7 @@
         0: Alive
         300: Dead
     - type: MovementSpeedModifier
-      baseWalkSpeed: 3.5
+      baseWalkSpeed: 3.5 # Fish-edit
       baseSprintSpeed: 3.5
     - type: FootstepModifier
       footstepSoundCollection:
@@ -109,6 +112,7 @@
       showInHands: true
     - type: ContainerContainer
       containers:
+        actions: !type:Container
         body_organs: !type:Container
     - type: Juggernaut
     - type: TTS
@@ -155,7 +159,7 @@
   components:
     - type: MovementSpeedModifier
       baseWalkSpeed: 3.0
-      baseSprintSpeed: 4.0
+      baseSprintSpeed: 4.0 # Fish-edit
     - type: MobThresholds
       thresholds:
         0: Alive

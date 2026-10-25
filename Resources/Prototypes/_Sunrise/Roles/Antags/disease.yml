@@ -73,7 +73,7 @@
     actions:
       ActionInfect: 3
       ActionDiseaseInfo: 999
-  - type: Muted
+  # - type: Muted
 
 - type: sickIcon
   id: SmartDiseaseIcon

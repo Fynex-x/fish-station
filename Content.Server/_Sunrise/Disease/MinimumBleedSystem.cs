@@ -6,7 +6,7 @@ namespace Content.Server._Sunrise.Disease;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 using Content.Server.Body.Components;
-using Content.Server.Body.Systems;
+using Content.Shared.Body.Systems;
 using Content.Server.Chat.Systems;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;

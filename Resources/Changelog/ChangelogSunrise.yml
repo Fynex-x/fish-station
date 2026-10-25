@@ -4997,3 +4997,10 @@
     message: Исправлена уязвимость дающая возможность читерам гостать всех игроков
   id: 2043
   url: https://github.com/makura-games/sunrise-station/pull/4856
+- author: ThereDrD
+  time: '2026-10-17T01:42:08.0000000+00:00'
+  changes:
+  - type: Fix
+    message: Исправлена очередная уязвимость, которая позволяла ронять сервер
+  id: 2044
+  url: https://github.com/makura-games/sunrise-station/pull/4857

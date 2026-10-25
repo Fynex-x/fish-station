@@ -4,7 +4,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 using Content.Shared._Sunrise.Disease;
 using System.Numerics;
-using Content.Server.Body.Systems;
+using Content.Shared.Body.Systems;
 using Content.Server.Chat.Systems;
 using Robust.Server.GameObjects;
 using Robust.Shared.Random;
@@ -16,7 +16,7 @@ using Content.Server.Chat;
 using Content.Shared.Stunnable;
 using Content.Shared.Damage.Prototypes;
 using Content.Server.Emoting.Systems;
-using Content.Server.Speech.EntitySystems;
+using Content.Shared.Speech.EntitySystems;
 using Content.Shared.FixedPoint;
 using Content.Server.Traits.Assorted;
 using Content.Shared.Body.Components;
@@ -26,6 +26,8 @@ using Content.Shared.Eye.Blinding.Components;
 using Content.Shared.Item;
 using Content.Shared.Medical;
 using Content.Shared.Speech.Muting;
+using Content.Shared.StatusEffectNew;
+using Content.Shared.Store;
 using Content.Shared.Store.Components;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Chemistry.Components;
@@ -51,12 +53,14 @@ public sealed partial class SickSystem : SharedSickSystem
     [Dependency] private SharedStunSystem _stun = default!;
     [Dependency] private UserInterfaceSystem _ui = default!;
     [Dependency] private InventorySystem _inventory = default!;
+    [Dependency] private StatusEffectsSystem _statusEffects = default!;
     private EntityLookupSystem Lookup => _entityManager.System<EntityLookupSystem>();
 
-    [ValidatePrototypeId<DamageTypePrototype>] private const string HeatDamage = "Heat";
-    [ValidatePrototypeId<DamageTypePrototype>] private const string CellularDamage = "Cellular";
-    [ValidatePrototypeId<DamageTypePrototype>] private const string PiercingDamage = "Piercing";
-    [ValidatePrototypeId<DamageTypePrototype>] private const string ShockDamage = "Shock";
+    private static readonly ProtoId<DamageTypePrototype> HeatDamage = "Heat";
+    private static readonly ProtoId<DamageTypePrototype> CellularDamage = "Cellular";
+    private static readonly ProtoId<DamageTypePrototype> PiercingDamage = "Piercing";
+    private static readonly ProtoId<DamageTypePrototype> ShockDamage = "Shock";
+    private static readonly EntProtoId MutedStatusEffect = "StatusEffectMuted";
 
     public override void Initialize()
     {
@@ -77,7 +81,7 @@ public sealed partial class SickSystem : SharedSickSystem
         {
             foreach (var emote in autoEmoteComponent.Emotes.ToArray())
             {
-                if (emote.Contains("Infected"))
+                if (emote.Id.Contains("Infected"))
                 {
                     _autoEmote.RemoveEmote(uid, emote);
                 }
@@ -87,8 +91,7 @@ public sealed partial class SickSystem : SharedSickSystem
         // Unconditionally remove all possible symptom components to prevent them staying on cure
         if (HasComp<SleepyComponent>(uid))
             RemComp<SleepyComponent>(uid);
-        if (HasComp<MutedComponent>(uid))
-            RemComp<MutedComponent>(uid);
+        _statusEffects.TryRemoveStatusEffect(uid, MutedStatusEffect);
         if (HasComp<PermanentBlindnessComponent>(uid))
             RemComp<PermanentBlindnessComponent>(uid);
         if (HasComp<BlurryVisionComponent>(uid))
@@ -192,7 +195,7 @@ public sealed partial class SickSystem : SharedSickSystem
                         component.Stady++;
                         foreach (var emote in EnsureComp<AutoEmoteComponent>(uid).Emotes.ToArray())
                         {
-                            if (emote.Contains("Infected"))
+                            if (emote.Id.Contains("Infected"))
                             {
                                 _autoEmote.RemoveEmote(uid, emote);
                             }
@@ -201,8 +204,7 @@ public sealed partial class SickSystem : SharedSickSystem
                         // Удаляем компоненты симптомов перед очисткой списка, если они больше не активны
                         if (HasComp<SleepyComponent>(uid))
                             RemComp<SleepyComponent>(uid);
-                        if (HasComp<MutedComponent>(uid))
-                            RemComp<MutedComponent>(uid);
+                        _statusEffects.TryRemoveStatusEffect(uid, MutedStatusEffect);
                         if (HasComp<PermanentBlindnessComponent>(uid))
                             RemComp<PermanentBlindnessComponent>(uid);
                         if (HasComp<BlurryVisionComponent>(uid))
@@ -230,7 +232,7 @@ public sealed partial class SickSystem : SharedSickSystem
         {
             if (TryComp<StoreComponent>(diseaseUid, out var store))
             {
-                bool f = _store.TryAddCurrency(new Dictionary<string, FixedPoint2>
+                bool f = _store.TryAddCurrency(new Dictionary<ProtoId<CurrencyPrototype>, FixedPoint2>
                     {
                         { diseaseComp.CurrencyPrototype, value }
                     },
@@ -280,7 +282,7 @@ public sealed partial class SickSystem : SharedSickSystem
 
                             break;
                         case "Muted":
-                            EnsureComp<MutedComponent>(uid);
+                            _statusEffects.TrySetStatusEffectDuration(uid, MutedStatusEffect);
                             break;
                         case "Blindness":
                             EnsureComp<PermanentBlindnessComponent>(uid);
