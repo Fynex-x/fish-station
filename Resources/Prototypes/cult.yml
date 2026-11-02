@@ -1,0 +1,813 @@
+# ==========================================
+# ДАРЫ
+# ==========================================
+
+- type: entity
+  name: Дар Защиты Тайного Короля
+  description: Дар Тайного Короля, надеваемый на шею, который защитит тебя. Использует батарейки.
+  suffix: HiddenKingCult
+  id: HydinKingGiftofProtection
+  parent: [ BaseItem, BaseSyndicateContraband ]
+  components:
+  - type: Item
+    size: Ginormous
+  - type: Clothing
+    quickEquip: false
+    slots:
+    - Neck
+  - type: Sprite
+    sprite: _Sunrise/Objects/Tools/EnergyDome/syndie.rsi
+    layers:
+      - state: icon
+  - type: ContainerContainer
+    containers:
+      cell_slot: !type:ContainerSlot
+  - type: PowerCellSlot
+    cellSlotId: cell_slot
+  - type: ItemSlots
+    slots:
+      cell_slot:
+        name: power-cell-slot-component-slot-name-default
+        startingItem: PowerCellSyndicate
+        whitelist:
+          tags:
+            - PowerCell
+  - type: EnergyDomeGenerator
+    damageEnergyDraw: 3
+    domePrototype: EnergyDomeSmallRed
+  - type: PowerCellDraw
+    drawRate: 10
+    useCharge: 1
+  - type: UseDelay
+    delay: 10.0
+
+- type: entity
+  parent: BaseSubdermalImplant
+  id: HydinKingGiftofRegeneration
+  name: дар регенерации Тайного Короля
+  description: Дар Тайного Короля лечит вас.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: _Sunrise/Entities/Objects/Implants/implants.rsi
+    state: inject_implant_red
+  - type: SubdermalImplant
+    implantAction: ActionActivateEmpImplantHydinKingGiftofRegeneration
+  - type: TriggerOnActivateImplant
+  - type: TriggerOnMobstateChange
+    mobState:
+    - Critical
+  - type: AddSolutionOnTrigger
+    solution: bloodstream
+    targetUser: true
+    addedSolution:
+      reagents:
+      - ReagentId: Omnizine
+        Quantity: 30
+      - ReagentId: Saline
+        Quantity: 15
+
+- type: entity
+  parent: BaseSubdermalImplant
+  id: HydinKingGiftofShelter
+  name: Дар Укрытия Тайного Короля
+  description: Даёт шанс уйти от погони, используя карманный Портал.
+  suffix: HiddenKingCult
+  components:
+  - type: SubdermalImplant
+    implantAction: ActionActivateHydinKingGiftofShelter
+  - type: TriggerOnActivateImplant
+  - type: ScramOnTrigger
+    targetUser: true
+
+- type: entity
+  parent: BaseSubdermalImplant
+  id: HiddenKingatEMI
+  name: Дар ЭМИ Тайного Короля
+  description: Обесточивает электричество в небольшом радиусе.
+  suffix: HiddenKingCult
+  components:
+  - type: SubdermalImplant
+    implantAction: ActionActivateEmpImplantHiddenKingatEMI
+  - type: TriggerOnActivateImplant
+  - type: EmpOnTrigger
+    range: 2.30
+    energyConsumption: 50000
+    disableDuration: 10
+
+# ==========================================
+# АКТИВ ДАРОВ (ACTION)
+# ==========================================
+
+- type: entity
+  parent: BaseImplantAction
+  id: ActionActivateEmpImplantHydinKingGiftofRegeneration
+  name: дар регенерации Тайного Короля
+  description: Дар Тайного Короля лечит вас.
+  components:
+  - type: LimitedCharges
+    maxCharges: 2
+  - type: AutoRecharge
+    rechargeDuration: 240
+  - type: Action
+    checkCanInteract: false
+    useDelay: 10
+    itemIconStyle: BigAction
+    priority: -20
+    icon:
+      sprite: Objects/Weapons/Grenades/empgrenade.rsi
+      state: icon
+
+- type: entity
+  parent: ActionActivateEmpImplant
+  id: ActionActivateEmpImplantHiddenKingatEMI
+  name: дар ЭМИ Тайного Короля
+  description: Обесточивает электричество в небольшом радиусе.
+  suffix: HiddenKingCult
+  components:
+  - type: LimitedCharges
+    maxCharges: 1
+  - type: AutoRecharge
+    rechargeDuration: 60
+  - type: Action
+    checkCanInteract: false
+    useDelay: 1
+    itemIconStyle: BigAction
+    icon:
+      sprite: Objects/Weapons/Bombs/c4.rsi
+      state: icon
+
+- type: entity
+  parent: BaseImplantAction
+  id: ActionActivateHydinKingGiftofShelter
+  name: дар Укрытия Тайного Короля
+  description: Даёт шанс уйти от погони, используя карманный Портал.
+  components:
+  - type: LimitedCharges
+    maxCharges: 1
+  - type: AutoRecharge
+    rechargeDuration: 240
+  - type: Action
+    checkCanInteract: false
+    useDelay: 1
+    itemIconStyle: BigAction
+    icon:
+      sprite: Structures/Specific/anomaly.rsi
+      state: anom4
+
+# Плющки
+
+- type: entity
+  id: MirrorShieldOfTheHiddenKing
+  parent: BaseShield
+  name: зеркальный щит Покровенного Царя
+  description: Щит с зеркалом на передней стороне, на котором выгравирован символ Покровенного Царя. Создан для защиты и отражения атак.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: _Sunrise/BloodCult/Entities/mirror_shield.rsi
+    state: icon
+  - type: Item
+    sprite: _Sunrise/BloodCult/Entities/mirror_shield.rsi
+    heldPrefix: "mirror"
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 300
+      behaviors:
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+  - type: Reflect
+    reflectProb: 0.5
+    reflects:
+    - Energy
+    - NonEnergy
+  - type: ReturnItemOnThrow
+  - type: CultMirrorShield
+  - type: Blocking
+    passiveBlockModifier:
+      coefficients:
+        Blunt: 0.8
+        Slash: 0.8
+        Piercing: 0.8
+        Heat: 0.6
+    activeBlockModifier:
+      coefficients:
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.6
+        Heat: 0.4
+      flatReductions:
+        Heat: 1
+        Piercing: 1
+
+- type: entity
+  name: очки ночного зрения Покровенного Царя
+  id: HiddenKingCultNightVisionGoggles
+  parent: [BaseNightVisionDevice]
+  description: Ночные очки, изготовленные из материала, поглощающего свет. Обеспечивают изображение местности в условиях низкой освещенности. Созданы для ночного видения и скрытных операций.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: _Sunrise/Clothing/Eyes/Glasses/nvd.rsi
+    layers:
+      - state: icon
+      - state: icon-flash
+        visible: false
+        shader: unshaded
+        map: [ "light" ]
+  - type: Clothing
+    sprite: _Sunrise/Clothing/Eyes/Glasses/nvd.rsi
+    quickEquip: true
+    slots: [ Eyes ]
+    clothingVisuals:
+      eyes:
+      - state: off-equipped-EYES
+  - type: ItemToggle
+    predictable: false
+    onUse: false
+    canActivateInhand: false
+    soundActivate:
+      path: /Audio/_Sunrise/Items/Goggles/activate.ogg
+    soundDeactivate:
+      path: /Audio/_Sunrise/Items/Goggles/deactivate.ogg
+    soundFailToActivate:
+      path: /Audio/Machines/button.ogg
+  - type: ToggleableVisuals
+    spriteLayer: light
+    clothingVisuals:
+      eyes:
+      - state: on-equipped-EYES
+        shader: unshaded
+  - type: ToggleCellDraw
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+  - type: Tag
+    tags:
+    - NightVisionDevice
+
+- type: entity
+  parent: [BaseItem, BaseSyndicateContraband]
+  id: HiddenKingCultPowerDisruptorTablet
+  name: скрижаль перебоя электричества Покровенного Царя
+  description: Одноразовое устройство, которое принудительно запускает проверку электрической сети станции, временно отключая электричество на всей станции. Создано для использования в ритуалах культистов.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Objects/Devices/declaration_of_war.rsi
+    layers:
+    - state: declarator
+  - type: Item
+  - type: TriggerOnUse
+  - type: AddGameRuleOnTrigger
+    gameRule: BreakerFlip
+  - type: DeleteOnTrigger
+
+- type: entity
+  parent: [BaseItem, BaseSyndicateContraband]
+  id: HiddenKingCultMeteorStormTablet
+  name: скрижаль метеоров Покровенного Царя
+  description: Одноразовое устройство, которое сигнализирует спутникам Синдиката о том, чтобы они сдвинули небольшую часть метеоритов в секторе. Активация вызовет метеоритный шторм вокруг станции. Создано для использования в ритуалах культистов.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Objects/Devices/declaration_of_war.rsi
+    layers:
+    - state: declarator
+  - type: Item
+  - type: TriggerOnUse
+  - type: SpawnEntityTableOnTrigger
+    table: !type:AllSelector
+      children:
+      - id: SunriseMeteorSwarmMediumRuleTrigger
+      - id: SunriseSpaceDustMinorRuleTrigger
+      - id: SunriseSpaceDustMinorSecondRuleTrigger
+  - type: DeleteOnTrigger
+
+# ==========================================
+# БРОНЯ
+# ==========================================
+
+- type: entity
+  parent: [ClothingHeadHelmetBase, BaseMajorContraband]
+  id: ClothingHeadHelmetHiddenKingCultProphetCrown
+  name: корона Покровенного Царя
+  description: Корона из черного металла с инкрустациями из драгоценных камней. Создана для защиты и демонстрации статуса Покровенного Царя. Изготовлена из прочного материала с высокой степенью защиты.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Head/Helmets/cult.rsi
+  - type: Clothing
+    sprite: Clothing/Head/Helmets/cult.rsi
+  - type: IngestionBlocker
+  - type: Pierceable
+    level: Metal
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.85
+        Slash: 0.75
+        Piercing: 0.7
+        Heat: 0.85
+  - type: Tag
+    tags:
+    - FullCovered
+    - Helmet
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+
+- type: entity
+  parent: [ ClothingOuterBaseLarge, BaseMajorContraband ]
+  id: ClothingOuterArmorHiddenKingCultProphetArmor
+  name: броня Покровенного Царя
+  description: Броня из черного металла с инкрустациями из драгоценных камней. Предназначена для защиты Покровенного Царя и демонстрации его статуса. Обеспечивает высокую степень защиты от физических атак.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/OuterClothing/Armor/cult_armour.rsi
+  - type: Clothing
+    sprite: Clothing/OuterClothing/Armor/cult_armour.rsi
+  - type: Pierceable
+    level: Metal
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.5
+        Slash: 0.5
+        Piercing: 0.5
+        Heat: 0.5
+  - type: GroupExamine
+  - type: Tag
+    tags:
+    - FullBodyOuter
+    - WhitelistChameleon
+
+- type: entity
+  parent: [ ClothingHandsGlovesColorBlack, BaseMajorContraband ]
+  id: ClothingHandsGlovesHiddenKingCultProphetGloves
+  name: перчатки Покровенного Царя
+  description: Перчатки из черного металла с инкрустациями из драгоценных камней. Созданы для защиты рук Покровенного Царя и усиления его физической силы. Обеспечивают умеренную защиту при ударах и могут использоваться как оружие.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Hands/Gloves/combat.rsi
+  - type: Clothing
+    sprite: Clothing/Hands/Gloves/combat.rsi
+  - type: Insulated
+  - type: Fiber
+    fiberMaterial: fibers-insulative
+  - type: MeleeWeapon
+    attackRate: 2
+    damage:
+      types:
+        Blunt: 6
+    bluntStaminaDamageFactor: 3
+    soundHit:
+      collection: Punch
+    animation: WeaponArcFist
+    mustBeEquippedToUse: true
+  - type: Butcherable
+    butcheringType: Knife
+    spawned:
+    - id: ClothingHandsGlovesCombatFingerless
+  - type: Follower
+    cult: HiddenKingCult
+    rank: Follower
+
+- type: entity
+  parent: [ ClothingNeckBase, BaseMajorContraband]
+  id: ClothingNeckCloakHiddenKingCultProphetCloak
+  name: плащ Покровенного Царя
+  description: Плащ из черного металла с инкрустациями из драгоценных камней. Хотя его защитные свойства со временем ослабли, он все еще демонстрирует статус Покровенного Царя.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Neck/Cloaks/goliathcloak.rsi
+    requiredSlot:
+    - neck
+    slot: head
+  - type: ContainerContainer
+    containers:
+      toggleable-clothing: !type:ContainerSlot {}
+
+- type: entity
+  parent: [ClothingHeadHelmetBase, BaseMajorContraband]
+  id: ClothingHeadHelmetHiddenKingCultFollowerCrown
+  name: корона последователя Покровенного Царя
+  description: Корона из черного металла с инкрустациями из драгоценных камней. Создана для защиты и демонстрации статуса последователя Покровенного Царя. Изготовлена из прочного материала с умеренной степенью защиты.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Head/Helmets/cult.rsi
+  - type: Clothing
+    sprite: Clothing/Head/Helmets/cult.rsi
+  - type: IngestionBlocker
+  - type: Pierceable
+    level: Metal
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.8
+        Slash: 0.8
+        Piercing: 0.8
+        Heat: 0.8
+  - type: Tag
+    tags:
+    - FullCovered
+    - Helmet
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+  - type: Follower
+    cult: HiddenKingCult
+    rank: Follower
+
+- type: entity
+  parent: [ ClothingOuterBaseLarge, BaseMajorContraband ]
+  id: ClothingOuterArmorHiddenKingCultFollowerArmor
+  name: броня последователя Покровенного Царя
+  description: Броня из черного металла с инкрустациями из драгоценных камней. Предназначена для защиты последователя Покровенного Царя и демонстрации его статуса. Обеспечивает умеренную степень защиты от физических атак.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/OuterClothing/Armor/cult_armour.rsi
+  - type: Clothing
+    sprite: Clothing/OuterClothing/Armor/cult_armour.rsi
+  - type: Pierceable
+    level: Metal
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.65
+        Slash: 0.65
+        Piercing: 0.65
+        Heat: 0.65
+  - type: GroupExamine
+  - type: Tag
+    tags:
+    - FullBodyOuter
+    - WhitelistChameleon
+  - type: Follower
+    cult: HiddenKingCult
+    rank: Follower
+
+- type: entity
+  parent: [ ClothingHandsGlovesColorBlack, BaseMajorContraband ]
+  id: ClothingHandsGlovesHiddenKingCultFollowerGloves
+  name: перчатки последователя Покровенного Царя
+  description: Перчатки из черного металла с инкрустациями из драгоценных камней. Созданы для защиты рук последователя Покровенного Царя и усиления его физической силы. Обеспечивают умеренную защиту при ударах и могут использоваться как оружие.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Hands/Gloves/combat.rsi
+  - type: Clothing
+    sprite: Clothing/Hands/Gloves/combat.rsi
+  - type: Insulated
+  - type: Fiber
+    fiberMaterial: fibers-insulative
+  - type: MeleeWeapon
+    attackRate: 2
+    damage:
+      types:
+        Blunt: 6
+    bluntStaminaDamageFactor: 3
+    soundHit:
+      collection: Punch
+    animation: WeaponArcFist
+    mustBeEquippedToUse: true
+  - type: Butcherable
+    butcheringType: Knife
+    spawned:
+    - id: ClothingHandsGlovesCombatFingerless
+  - type: Follower
+    cult: HiddenKingCult
+    rank: Follower
+
+- type: entity
+  parent: [ ClothingNeckBase, BaseMajorContraband]
+  id: ClothingNeckCloakHiddenKingCultFollowerCloak
+  name: плащ последователя Покровенного Царя
+  description: Плащ из черного металла с инкрустациями из драгоценных камней. Хотя его защитные свойства со временем ослабли, он все еще демонстрирует статус последователя Покровенного Царя.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: Clothing/Neck/Cloaks/goliathcloak.rsi
+    requiredSlot:
+    - neck
+    slot: head
+  - type: ContainerContainer
+    containers:
+      toggleable-clothing: !type:ContainerSlot {}
+  - type: Follower
+    cult: HiddenKingCult
+    rank: Follower
+
+# ==========================================
+# ОРУЖИЕ
+# ==========================================
+
+- type: entity
+  name: клинок ритуала Покровенного Царя
+  parent: [BaseItem, BaseMajorContraband]
+  id: RitualDaggerHiddenKingCult
+  description: Клинок из черного металла с инкрустациями из драгоценных камней. Используется для ритуалов и жертвоприношений.
+  suffix: HiddenKingCult
+  components:
+  - type: Tool
+    qualities:
+    - Slicing
+  - type: Sharpener
+  - type: Sprite
+    sprite: Objects/Weapons/Melee/cult_dagger.rsi
+    state: icon
+  - type: MeleeWeapon
+    wideAnimationRotation: -135
+    attackRate: 1.5
+    damage:
+      types:
+        Slash: 12
+  - type: Item
+    size: Normal
+  - type: Clothing
+    sprite: Objects/Weapons/Melee/cult_dagger.rsi
+    slots:
+    - back
+  - type: DisarmMalus
+
+- type: entity
+  name: рапира Покровенного Царя
+  parent: [ BaseSword, BaseMajorContraband ]
+  id: HiddenKingCultRapier
+  description: Рапира из черного металла с инкрустациями из драгоценных камней. Создана для защиты и демонстрации статуса Покровенного Царя.
+  suffix: HiddenKingCult
+  components:
+  - type: Sprite
+    sprite: _Sunrise/Objects/Weapons/Melee/syndicate_rapier.rsi
+    layers:
+    - state: icon
+    - state: spear1
+      map: ["enum.SolutionContainerLayers.Fill"]
+      visible: false
+  - type: DisarmMalus
+    malus: 0.6
+  - type: MeleeWeapon
+    wideAnimationRotation: -135
+    angle: 0
+    animation: WeaponArcThrust
+    attackRate: 1.2
+    damage:
+      types:
+        Piercing: 17
+    resistanceBypass: true
+    soundHit:
+        path: /Audio/Weapons/bladeslice.ogg
+  - type: Solution
+    id: melee
+    solution:
+      maxVol: 10
+  - type: MeleeChemicalInjector
+    solution: melee
+  - type: RefillableSolution
+    solution: melee
+  - type: InjectableSolution
+    solution: melee
+  - type: SolutionTransfer
+    maxTransferAmount: 1
+  - type: Appearance
+  - type: SolutionContainerVisuals
+    solutionName: melee
+    maxFillLevels: 1
+    fillBaseName: spear
+    inHandsFillBaseName: -fill-
+    inHandsMaxFillLevels: 1
+  - type: Reflect
+    reflects:
+    - NonEnergy
+    reflectProb: 0.4
+    spread: 90
+  - type: Item
+    size: Ginormous
+    storedSprite:
+      state: storage
+      sprite: _Sunrise/Objects/Weapons/Melee/syndicate_rapier_storage_64x.rsi
+  - type: Tag
+    tags:
+    - SyndicateRapier
+  - type: EmitSoundOnLand
+    sound:
+      path: /Audio/_Sunrise/Items/Handling/sabre_drop.ogg
+  - type: StaticPrice
+    price: 3000
+
+- type: entity
+  name: ножны рапиры Покровенного Царя
+  id: ClothingBeltSheathHiddenKingCultFilled
+  parent: [ClothingBeltSheathSyndicate, BaseMajorContraband]
+  description: Ножны из черного металла с инкрустациями из драгоценных камней. Созданы для защиты и демонстрации статуса Покровенного Царя.
+  suffix: Filled, HiddenKingCult
+  components:
+  - type: ContainerFill
+    containers:
+      item:
+      - HiddenKingCultRapier
+
+# ==========================================
+# АЛТАРЬ ПРИЗЫВА
+# ==========================================
+
+- type: entity
+  id: PirateTechFabCircuitboardHiddenKingCultFilled
+  parent: BaseMachineCircuitboard
+  name: скрижаль призыва
+  description: A machine printed circuit board for an pirate techfab.
+  suffix: HiddenKingCult
+  components:
+    - type: Sprite
+      sprite: _Sunrise/Objects/Misc/module.rsi
+      state: pirate_stitcher
+    - type: Item
+      storedRotation: -90
+    - type: MachineBoard
+      prototype: PirateTechFabHiddenKingCultFilled
+      stackRequirements:
+        TabletHiddenKing: 2
+
+- type: entity
+  id: PirateTechFabHiddenKingCultFilled
+  parent: [ ConstructibleMachine ]
+  name: магический алтарь призыва Покровенного Царя
+  suffix: HiddenKingCult
+  description: Древний алтарь, предназначенный для проведения темных ритуалов и призыва Тайного Короля.
+  placement:
+    mode: SnapgridCenter
+  components:
+    - type: AnnounceOnSpawn
+      message: КАРОЧЕ СТАНЦИЯ ВЫ ОЧЕНЬ СИЛЬНО ОБЛОЖАЛИСЬ
+      sender: Отдел Центрального Командования по делам высших измерений
+      sound:
+        path: /Audio/_Fish/StationEvents/level.ogg
+      color: red
+    - type: Transform
+      anchored: true
+      noRot: false
+    - type: Physics
+      bodyType: Static
+    - type: Fixtures
+      fixtures:
+        fix1:
+          shape:
+            !type:PhysShapeAabb
+            bounds: -0.25,-0.5,0.25,0.5
+          density: 190
+          mask:
+          - MachineMask
+          layer:
+          - MachineLayer
+    - type: Clickable
+    - type: InteractionOutline
+    - type: Anchorable
+    - type: Rotatable
+    - type: Injurable
+      damageContainer: StructuralInorganic
+    - type: Damageable
+      damageModifierSet: Metallic
+    - type: Destructible
+      thresholds:
+      - trigger:
+          !type:DamageTrigger
+          damage: 200
+        behaviors:
+        - !type:PlaySoundBehavior
+          sound:
+            collection: MetalBreak
+        - !type:DoActsBehavior
+          acts: ["Destruction"]
+      - trigger:
+          !type:DamageTrigger
+          damage: 100
+        behaviors:
+        - !type:PlaySoundBehavior
+          sound:
+            collection: MetalBreak
+        - !type:DoActsBehavior
+          acts: ["Destruction"]
+    - type: Pullable
+      bodyType: Static
+    - type: Sprite
+      sprite: Structures/Furniture/Altars/Cults/fangs.rsi
+      state: full
+    - type: Icon
+      sprite: Structures/Furniture/Altars/Cults/fangs.rsi
+      state: full
+    - type: Machine
+      board: PirateTechFabCircuitboardHiddenKingCultFilled
+    - type: Prayable
+      bibleUserOnly: false
+    - type: PointLight
+      color: "#ff0000"
+      radius: 1.5
+      energy: 0.7
+    - type: TimedDespawn
+      lifetime: 15
+    - type: SpawnOnDespawn
+      prototype: MobHiddenKing
+#    - type: SpawnOnSpawn
+#      prototypes:
+#      - RMCExplosionEffectGrenadeShockWave
+#    - type: AmbientSound
+#      volume: 0
+#      range: 13
+#      enabled: true
+#      sound:
+#        path: /Audio/_Fish/StationEvents/level.ogg
+
+# ==========================================
+# БОГ (ТАЙНЫЙ КОРОЛЬ)
+# ==========================================
+
+- type: entity
+  parent: BaseMob
+  id: MobHiddenKing
+  name: Тайный Король
+  suffix: HiddenKingCult
+  components:
+  - type: AnnounceOnSpawn
+    message: Тайный Король явился в этот мир!
+    sender: Покровенный Царь
+    sound:
+      path: /Audio/Misc/narsie_rises.ogg
+    color: red
+  - type: CargoSellBlacklist
+  - type: RandomWalk
+    minSpeed: 10
+    maxSpeed: 20
+    minStepCooldown: 1
+    maxStepCooldown: 2
+  - type: ContentEye
+    maxZoom: 2.0,2.0
+  - type: Input
+    context: "ghost"
+  - type: MovementIgnoreGravity
+  - type: IntrinsicRadioReceiver
+  - type: ActiveRadio
+    channels:
+    - Binary
+    - Common
+    - Command
+    - CentCom
+    - Engineering
+    - Medical
+    - Science
+    - Security
+    - Service
+    - Supply
+    - Syndicate
+    globalReceive: true
+  - type: Physics
+    bodyStatus: InAir
+  - type: CanMoveInAir
+  - type: Sprite
+    sprite: Mobs/Demons/narsie.rsi
+    drawdepth: Ghosts
+    scale: 2.0,2.0
+    layers:
+    - state: narsie
+      shader: unshaded
+    - type: AmbientSound
+      volume: 9
+      range: 13
+      enabled: true
+      sound:
+        path: /Audio/_Sunrise/BloodCult/narsie_summoned.ogg
+
+# ==========================================
+# КОМПОНЕНТЫ И СТАК СКРИЖАЛИ
+# ==========================================
+
+- type: entity
+  id: TabletHiddenKingCult
+  name: Скрижаль тайного короля
+  parent: BaseStockPart
+  description: Древняя каменная плитка, исписанная кровавыми рунами Тайного Короля. Используется как редкий компонент в строительстве культистских сооружений.
+  suffix: HiddenKingCult
+  components:
+    - type: Stack
+      stackType: TabletHiddenKing
+      count: 1
+    - type: Sprite
+      sprite: Objects/Misc/stock_parts.rsi
+      state: micro_mani
+    - type: Item
+      size: Tiny
+
+- type: stack
+  id: TabletHiddenKing
+  name: скрижали тайного короля
+  icon:
+    sprite: Objects/Misc/stock_parts.rsi
+    state: micro_mani
+  spawn: TabletHiddenKingCult
+  maxCount: 1
